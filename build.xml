@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--************************************************************************ -->
+<!--                Royal Holloway, University of London                     -->
+<!--                   Department of Computer Science                        -->
+<!--                                                                         -->
+<!--                              Project                                    -->
+<!--                          Pedro Contreras                                -->
+<!--************************************************************************ -->
+
+<project name="movie" basedir="." default="compile">
+
+    <!--******************************************************************** -->
+    <!-- Project properties definition                                       -->
+    <!--******************************************************************** -->
+    <property name="project"         value="movie"/>
+    <property name="year"            value="2013"/>
+    <property name="version"         value="1.0"/>
+
+    <!--Change this address to your local tomcat installation-->
+    <property name="tomcat.dir"      value="/Applications/tomcat"/>
+
+    <property name="src"             value="./src"/>
+    <property name="lib"             value="./src/lib"/>
+    <property name="html"            value="./html"/>
+    <property name="conf"            value="./src/conf/web"/>
+    <property name="build.dest"      value="./bin"/>
+    <property name="final.name"      value="${project}-${version}"/>
+    <property name="final.dir"       value="./${final.name}"/>
+
+    <property name="project.tar.gz"  value="${build.dest}/${project}.tar.gz"/>
+    <property name="project.jar"     value="${build.dest}/${project}.jar"/>
+
+    <property name="deploy.dir"      value="${tomcat.dir}/webapps"/>
+    <property name="deploy"          value="${deploy.dir}/movies"/>
+	
+	
+	<!--******************************************************************** -->
+	<!-- Start/Stop Tomcat                                                   -->
+	<!--******************************************************************** -->
+	<target name="stop">
+		<echo message="Stoping tomcat.."/>
+	    <exec executable="${tomcat.dir}/bin/shutdown.sh">
+	    </exec>
+	</target>
+	
+	<target name="start">
+		<echo message="Starting tomcat.."/>
+	    <exec executable="${tomcat.dir}/bin/startup.sh">
+	    </exec>
+	</target>
+
+    <!--******************************************************************** -->
+    <!-- Build the project classpath for the ../lib directory                -->
+    <!--******************************************************************** -->
+    <path id="project.classpath">
+        <fileset dir="${tomcat.dir}/lib/">
+             <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib}">
+             <include name="*.jar"/>
+        </fileset>
+    </path>
+
+
+    <!--******************************************************************** -->
+    <!-- Handles javac compilations                                          -->
+    <!--******************************************************************** -->
+    <target name="compile" description="Compile project.">
+        <echo message="Loading libraries ${tomcat.dir}/lib, /lib ...."/>
+        <echo message="Compiling...."/>
+        <mkdir dir="${build.dest}"/>
+        <echo message="Compiling files in ${src} and saving to ${build.dest}"/>
+        <javac  deprecation="yes" srcdir="${src}/" debug="on"  destdir="${build.dest}" includeantruntime="false">
+            <classpath >
+                <fileset dir="${tomcat.dir}/lib">
+                     <include name="*.jar"/>
+                </fileset>
+
+                <fileset dir="${lib}/jdbc-sqlite">
+                     <include name="*.jar"/>
+                </fileset>
+            	<fileset dir="${lib}/javolution">
+            		<include name="*.jar"/>
+            	</fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!--******************************************************************** -->
+    <!-- Rebuilds everything                                                 -->
+    <!--******************************************************************** -->
+    <target name="rebuild" depends="clean,compile" description="rebuild">
+        <echo message="Cleaning directories and compiling."/>
+    </target>
+
+
+    <!--******************************************************************** -->
+    <!-- Cleans up the distribution                                          -->
+    <!--******************************************************************** -->
+    <target name="clean" description="Cleans up distribution files.">
+        <echo message="Cleaning directories  /classes, /javadocs, jars, and wars."/>
+        <delete dir="${build.dest}/${project}"/>
+        <delete dir="${build.dest}/package cache"/>
+        <delete file="${project.jar}"/>
+        <delete file="${project.tar.gz}"/>
+        <delete file="${deploy.dir}/movies.war"/>
+    	<delete dir="${deploy.dir}/movies"/>
+    </target>
+
+
+    <!--******************************************************************** -->
+    <!-- Deploy repository prototype                                         -->
+    <!--******************************************************************** -->
+    <target name="deploy" depends="stop, clean, compile, start" description="Deploy repository application">
+        <echo message="deleting old  WAR file at ${deploy.dir}"/>
+        <delete file="${deploy.dir}/repository.war"/>
+        <echo message="Building WAR file..."/>
+        <echo message="Deploying movies..."/>
+
+        <war destfile="${deploy.dir}/movies.war" webxml="${conf}/web.xml">
+            <fileset dir="${html}" />
+            <lib dir="${lib}/jdbc-sqlite" />
+            <classes dir="${build.dest}"/>
+        </war>
+        <echo message="Compile and Deploy all the prototype DONE!"/>
+    </target>
+
+
+</project>

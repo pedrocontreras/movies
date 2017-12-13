@@ -1,0 +1,933 @@
+README 02 August 2013.  Pedro Contreras
+NOTICE: I have tested this project only with Mac OS.
+        It should work in other OS systems too.
+        Only the Java project is included. 
+        There is a C version to parse files and populate the 
+        database, but that is not up to date.
+        
+-------------------------------------------------------
+################  PROJECT DESCRIPTION  ################
+-------------------------------------------------------
+
+a) This project includes the data processing classes to cluster, analyse  and
+parse the "hetrec2011-movielens-2k" data set.
+(see http://www.grouplens.org/node/12)
+
+This dataset is an extension of MovieLens10M dataset, published by GroupLeans 
+research group (http://www.grouplens.org)
+
+b) also the project includes the classes to deploy a web application that gives
+suggestions to the user based on the cluster resulting from the analysis.
+
+-------------------------------------------------------
+################  DEPENDENCIES         ################
+-------------------------------------------------------
+
+- Apache Tomcat: see http://tomcat.apache.org
+- Apache Ant:    see http://ant.apache.org
+- JDBC-SQLITE:   see https://bitbucket.org/xerial/sqlite-jdbc  
+- Javolution:    <optional> see http://javolution.org
+- Java 1.7
+
+* To deploy the software Apache Tomcat is needed. Tomcat libraries are needed
+in the CLASSPATH  to compile the web application. 
+
+* Ant is needed to compile and deploy the application.
+
+Other libraries needed are jdbc-sqlite and javolution (if you want to use 
+FastTable --in my tests this was not faster than ArrayList--). These last two
+libraries are included in the following directory.
+
+├── src
+|    └── lib
+|          ├── javolution
+|          └── jdbc-sqlite
+|
+└──  build.xml
+
+
+--------------------------------------
+ Deploying a lightweigth version
+--------------------------------------
+
+If deploying a small foot print version is neeed, tomcat can be used 
+embedded. Libraries can be downloaded from:
+http://tomcat.apache.org/download-70.cgi
+
+ 
+
+
+-------------------------------------------------------
+################ COMPILING THE PROJECT ################
+-------------------------------------------------------
+
+To compile and deploy the project the following is needed:
+
+1) install Tomcat
+2) copy static folder "movie-data" into ..\tomcat\webapps\
+   this is needed so that access to movie covers and the sqlite database is 
+   available for the web application
+3) open build.xml and change the variable <tomcat.dir> to point to your tomcat 
+   (see line 20)
+4) then you can run $ant deploy in the console(targets clean, compile, rebuild, 
+   start, stop are also provided)
+5) copy temp/sqlite-3.7.15-x86_64-libsqlitejdbc.jnilib into tomcat   
+   if you are not using mac then you need to find the right library 
+   for your OS.
+
+-------------------------------------------------------
+################  PROJECT PACKAGES     ################
+-------------------------------------------------------
+
+cluster: classes to carry out the clustering process
+
+conf: web.xml to map the servlet requests to the Java classes
+
+data: classes to parse data source
+
+db:  classes to connect and work with the SQLITE database
+
+gui:  servlets 
+
+metric: ignore this
+
+util: extra packages and also global variables
+
+
+-------------------------------------------------------
+################  DATA FILES           ################
+-------------------------------------------------------
+.
+├── database
+│   └── movies.sqlite3   <database>
+│
+├── hetrec2011           <data set currently used>
+│   ├── fields.txt
+│   ├── movie_actors.dat
+│   ├── movie_countries.dat
+│   ├── movie_directors.dat
+│   ├── movie_genres.dat
+│   ├── movie_locations.dat
+│   ├── movie_tags.dat
+│   ├── movies.dat
+│   ├── processed        <processed data>
+│   │   ├── clusters.dat
+│   │   ├── occurrenceNoSpaces.dat
+│   │   ├── occurrence_test.dat
+│   │   ├── user_clusters_out.dat
+│   │   ├── user_ratedmovies_out.dat
+│   │   ├── user_ratedmovies_out_final.dat
+│   │   ├── user_ratedmovies_out_test.dat
+│   │   ├── user_similarity_out.dat
+│   │   └── users_reindexed.dat
+│   ├── readme.txt
+│   ├── tags.dat
+│   ├── user_ratedmovies-timestamps.dat
+│   ├── user_ratedmovies.dat
+│   ├── user_taggedmovies-timestamps.dat
+│   └── user_taggedmovies.dat
+│
+├── movieLens       <no used at the moment>
+│   ├── ml-100k
+│   │   ├── README
+│   │   ├── u.data
+│   │   ├── u.genre
+│   │   ├── u.info
+│   │   ├── u.item
+│   │   ├── u.occupation
+│   │   ├── u.user
+│   └── ml-100k-README.txt
+├── temp                    <copy this folder to inside tomcat>   
+│   └── sqlite-3.7.15-x86_64-libsqlitejdbc.jnilib 
+│
+└── vector_results          <cluster processed data>
+    ├── additionVector-1.dat
+    ├── randomNumbersVector-1.dat
+    └── randomProjection-1.dat
+
+
+-------------------------------------------------------
+################  DATABASE SCHEMA      ################
+-------------------------------------------------------
+-------- MOVIES -------     
+MOVIE_ID        INT
+TITLE           TEXT 
+PICTURE         TEXT
+YEAR            INT 
+DIRECTOR_NAME   TEXT 
+COUNTRY         TEXT
+
+        
+------- ACTORS --------  
+MOVIE_ID        INT 
+ACTOR_NAME      TEXT
+
+
+------- GENRES --------      
+MOVIE_ID        INT
+GENRE           TEXT
+
+------- RATINGS ------- 
+USER_ID         INT
+USER_SEQ_IDX    INT
+MOVIE_ID        INT
+MOVIE_SEQ_IDX   INT
+RATING          TEXT
+
+
+------- SIMILARITY ----
+USER_SEQ_IDX_1  INT 
+USER_SEQ_IDX_2  INT
+SIMILARITY      INT
+DISSIMILARITY   INT
+
+
+------- USER_CLUSTER -- 
+USER_SEQ_IDX    INT
+RND_PROJECTION  REAL
+
+
+-------------------------------------------------------
+-------------------------------------------------------
+To work with the database directly, or to upload data
+without these programs any 3rd party software can be used.
+For example:
+
+https://addons.mozilla.org/en-us/firefox/addon/sqlite-manager/
+http://sqliteadmin.orbmu2k.de/  (windows only) 
+
+
+
+-------------------------------------------------------
+################  USING THE WEBSITE    ################
+-------------------------------------------------------
+
+After deploying the application into tomcat point your web
+browser to the following address:
+http://localhost:8080/movies/Search
+
+In the input box write "u:<user_number>"
+   This will sugest movies for the given user.
+
+In the input box write "a:<actor_name>"
+
+In the input box write "d:<director_name>"
+
+
+-------------------------------------------------------
+################  DATASET NOTES        ################
+-------------------------------------------------------
+
+Other errors
+Bo Derek has featured on: Tarzan the Ape Man,  1932 
+
+
+-------------------------------------------------------
+################  DUPLICATED MOVIES    ################
+-------------------------------------------------------
+ 
+Toy story: 1 3114 4929
+Grumpy Old Men: 3 3450
+Sabrina: 7 915
+Othello: 26 2848
+Babe: 34 6517
+Richard III: 41 7338
+Live Free or Die Hard: 45 53972
+Shichinin no samurai: 47 2019
+The Usual Suspects: 50 4332
+Georgia Rule: 55 53002
+Eye for an Eye: 61 4946
+Don't Be a Menace to South Central While Drinking Your Juice in the Hood: 63 39896
+From Dusk Till Dawn: 70 3587
+Kicking & Screaming: 72 33495
+Les mis�rables: 73 1873
+Black Sheep: 88 55553
+The Bridges of Madison County: 105 33152
+Taxi Driver: 111 41136
+Boomerang: 122 64519
+Flirting with Disaster: 125 5637
+The Neverending Story III: 126 2161
+Angela's Ashes: 130 3179
+The Curse of the Jade Scorpion: 132 4733
+Man of the Year: 137 48593
+Hard Target: 139 464
+Bad Boys: 145 26462
+The Moguls: 149 5709
+Basic Instinct 2: 152 44759
+Fail-Safe: 190 7560
+The Scarlet Letter: 191 957
+The Browning Version: 211 34482
+The Cure: 219 4645
+Tucker: The Man and His Dream: 226 4557
+Flash Gordon: 243 4941
+Heavenly Creatures: 247 3193
+The Hunted: 251 6219
+Interview with the Vampire: The Vampire Chronicles: 253 2328 4753 25793
+Kiss of Death: 259 41585
+Little Women: 261 4921 7054
+A Little Princess: 262 917
+Love Affair: 270 6837
+Frankenstein: 273 2648
+Man of the House: 274 31867
+Mixed Nuts: 275 6525
+Miracle on 34th Street: 277 2398
+Nobody's Fool: 281 26577
+Natural Born Killers: 288 7943 26117
+L�on: 293 31485
+Trois couleurs: Rouge: 306 2929  62235
+Santa Claus: 317 2399
+Tank Girl: 327 8634
+Village of the Damned: 332 2553
+Incubo sulla citt� contaminata: 336 8220
+War: 340 54775
+The Jungle Book: 362 2078  6743
+The Mask: 367 8806  8880
+Bad Company: 384 5414 5426
+This Boy's Life: 388 6436
+In Cold Blood: 394 6852
+Cape Fear: 397 1343  1344
+Open Season: 402 48414
+Vicky Cristina Barcelona: 417 60950
+Black Beauty: 421 8929
+Invasion of the Body Snatchers: 426 1337  2664  7001
+Calendar Girls: 430 7155  7625
+Huo Yuan Jia: 448 46322
+The Fugitive: 457 55854
+A Perfect Getaway: 459 5471 8016
+Getting Even with Dad: 460 4581
+Lassie: 484 47805
+M. Butterfly: 488 1087
+The Last Boy Scout: 528 7007
+Kagemusha: 533 3091
+The Three Musketeers: 552 4756  25946  31923
+Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb: 556 750
+2 Days in Paris: 559 54796
+Killer Movie: 561 4097
+Dances with Wolves: 590 4382
+Batman: 592 26152
+Pinocchio: 596 5990
+Jane Eyre: 613 6983  7190
+Rude Boy: 629 5239
+Courage Under Fire: 647 7480
+Mission: Impossible III: 648 45186
+48 Hrs.: 656 5049
+August Rush: 660 8158 55872 60524
+True Crime: 695 2561
+Angus, Thongs and Perfect Snogging: 700 62718
+Face/Off: 702 1573  1878
+Boy A: 703 4290  59995
+Galaxy Quest: 704 3175
+The Truth About Cats & Dogs: 708 4386
+Flipper: 711 8850
+Save the Last Dance: 726 4054
+The Riches: 730 32090
+Twister: 736 7781
+Star Wars: Episode I - The Phantom Menace: 761 2628
+This Is Spinal Tap: 764 1288  4674
+La m�me: 771 6735  52579
+The Fan: 782 5655
+The Hunchback of Notre Dame: 783 7079  25746
+The Nutty Professor: 788 2136
+Phenomenon: 802 6803
+Mystery, Alaska: 808 2889
+Jeder f�r sich und Gott gegen alle: 824 5056
+Ransom: 832 7197
+High School Musical 3: Senior Year: 833 62912
+Evil Angels: 853 3211
+The Godfather: 858 25934
+The Time Traveler's Wife: 864 1508
+Kansas City: 869 4859
+Nothing to Lose: 875 3065 7048
+Bill & Ted's Bogus Journey: 885 4980
+Bulletproof Monk: 886 6294
+Miami Vice: 889 47044
+Singin' in the Rain: 899 2904 5328
+The Gay Divorcee: 907 8424
+Some Like It Hot: 910 3804
+The Maltese Falcon: 913 8228
+Sunset Blvd.: 922 3866
+The Women: 927 7584 61361
+Spellbound: 931 6331
+Father of the Bride: 934 6944
+The Adventures of Robin Hood: 940 5499
+The Mask of Zorro: 941 2006
+To Be or Not to Be: 946 26491
+My Man Godfrey: 947 3096
+East of Eden: 949 1815
+Around the World in 80 Days: 952 8526
+Night of the Living Dead: 968 8225
+La battaglia di Algeri: 974 26131
+The Associate: 1001 1113
+The Parent Trap: 1013 2059
+Homeward Bound: The Incredible Journey: 1015 2057
+The Shaggy Dog: 1016 44399
+That Darn Cat: 1018 1460
+Cinderella: 1022 63239
+Robin Hood: Prince of Thieves: 1027 3034
+Die Hard: 1036 1370
+Secret Agent: 1040 2211
+Romeo + Juliet: 1059 3668
+Indiana Jones and the Last Crusade: 1063 1291
+Shall We Dance: 1066 8916
+The Manchurian Candidate: 1082 1267  8781
+Weekend at Bernie's: 1091 7749
+Loser: 1107 3616
+Sleepover: 1115 8642
+Punch-Drunk Love: 1119 5673
+The Fog: 1128 39400
+Kinsey: 1133 2234 8966
+Get Over It: 1142 4168
+Faust: Love of the Damned: 1151 4404
+Raw Deal: 1153 7310
+Best of the Best 3: No Turning Back: 1170 6491
+La double vie de V�ronique: 1176 6603
+The Thin Blue Line: 1189 7775
+12 Angry Men: 1203 55020
+Der Himmel �ber Berlin: 1211 1925
+Psycho: 1219 2389
+Henry V: 1224 25901
+Trust the Man: 1236 47976
+Dead Poets Society: 1246 6206
+The Day the Earth Stood Still: 1253 64497
+The Deer Hunter: 1263 8679
+Unforgiven: 1266 6461
+Back to the Future: 1270 1946
+Cool Hand Luke: 1276 5754
+The Big Sleep: 1284 5352
+Ben-Hur: 1287 6986
+Alien�: 1320 1690
+The Amityville Horror: 1327 33085
+Believers: 1332 5379
+The Birds: 1333 4479
+The Blob: 1334 4480
+Dracula: 1339 2644  5649 6665
+Carrie: 1345 25971
+Cat People: 1346 7713
+The Omen: 1350 45662
+Albino Alligator: 1352 2525
+Nochnoy dozor: 1355 31804
+One Hundred and One Dalmatians: 1367 2085
+Grease: 1380 1381
+Jaws: 1387 1388
+Jerry Maguire: 1393 6162
+The Last of the Mohicans: 1408 26901
+Michael Clayton: 1409 55276
+Hamlet:  1941  2820  3598  3723  61246
+The Mother: 1414 8365
+The Grateful Dead: 1421 30949
+Underworld: 1430 6754
+The Time Machine: 1433 3959  5171
+The Strangers: 1434 25927  59727
+SubUrbia: 1454 26494
+Children of Men: 1473 48774
+Private Parts: 1476 61931
+Van Helsing: 1482 7454
+Crash: 1483 7112 33166
+Anna Karenina: 1496 7092
+Grosse Pointe Blank: 1500 26172
+Walk All Over Me: 1509 8610
+Mujeres al borde de un ataque de nervios: 1518 3067
+Broken English: 1519 54193
+The Ten Commandments: 1520 7386
+Nirgendwo in Afrika: 1529 6216
+The Lost World: Jurassic Park: 1544 4277
+Buddy: 1551 5714
+My Best Friend's Wedding: 1569 5926
+The Fall: 1574 59387
+Contact: 1584 5895
+Steel Magnolias: 1599 3844
+The Game: 1625 60405
+Fire Down Below: 1626 7332
+The Day of the Locust: 1628 8727
+The MatchMaker: 1629 31594
+Indian Summer: 1642 5589
+The Devil's Advocate: 1645 26241
+The Phantom of the Opera: 1655 3936  4794 25755 30816 31026
+Wonderland: 1657 3823 6868
+The Hurricane: 1659 3178
+Anastasia: 1688 6516
+Titanic: 1721 3404
+Twisted: 1723 7321
+Great Expectations: 1735 25923
+Duo luo tian shi: 1757 8952
+Zardoz: 1774 7817
+Joy Ride: 1776 4821
+King of New York: 1785 3640
+Men with Guns: 1788 26982
+Twilight: 1791 63992
+Hush: 1798 5534
+Niagara: 1811 2939
+The Proposition: 1820 39381
+Big: 1827 2797
+Prince Valiant: 1849 8654
+Slumdog Millionaire: 1872 63082
+Deep Impact: 1876 3413
+Quest for Camelot: 1881 6916 7714
+Godzilla: 1882 2364
+Insomnia: 1889 5388
+Coyote Ugly: 1891 3825
+A Perfect Murder: 1892 2219
+Doctor Dolittle: 1911 2135
+What Ever Happened to Baby Jane?: 1922 3546
+All Quiet on the Western Front: 1927 7334
+Spirit: Stallion of the Cimarron: 1928 5389
+Mutiny on the Bounty: 1931 26085
+All the King's Men: 1942 48326
+Midnight Cowboy: 1952 5393 8334
+A Nightmare on Elm Street: The Dream Child: 1972 36152
+Halloween: 1982 54785
+Prom Night: 1987 59306
+Bride of Chucky: 1991 2315
+Lethal Weapon: 2000 2001
+Metropolis: 2010 5072
+Freaky Friday: 2014 6593
+Babes in Toyland: 2017 3086
+Dangerous Liaisons: 2020 5646
+Dune: 2021 7842
+Lolita: 2025 2729
+Flight of the Navigator: 2046 7074
+The Mighty Ducks: 2082 2310
+Peter Pan: 2087 7164
+The Lord of the Rings: The Return of the King: 2116 7153
+Nineteen Eighty-Four: 2117 62049
+Charlotte's Web: 2137 49647
+How Stella Got Her Groove Back: 2154 6321
+Your Friends & Neighbors: 2165 5773
+Blade: 2167 5562
+Deja Vu: 2175 49278
+The Man Who Knew Too Much: 2183 2212
+I Confess: 2185 39429
+Strangers on a Train: 2186 26148
+Mr. & Mrs. Smith: 2205 33679
+The Ring: 2226 5679 42013
+Shao Lin san shi liu fang: 2258 51277
+Filth and Wisdom: 2260 63119
+Last Night: 2262 3008
+We're No Angels: 2264 3249
+Ils: 2287 53326
+Impostor: 2295 5046
+The Producers: 2300 42002
+Soldier: 2322 6130
+Valkyrie: 2323 64983
+The Stepford Wives: 2346 8373
+Mona Lisa Smile: 2349 7154
+King Kong: 2366 2367 41569 54881
+The Karate Kid: 2420 3310 3784
+The General: 2425 3022 7188
+Mighty Joe Young: 2429 2430
+At First Sight: 2445 7490
+Requiem for a Dream: 2446 3949
+The Ninth Gate: 2451 3355
+The Fly: 2454 2455
+Running Scared: 2457 5240 43921
+The Texas Chainsaw Massacre: 2459 6880
+Tough Guys Don't Dance: 2472 6846
+Gloria: 2479 5179
+Last Days: 2494 34326
+The Break-Up: 2508 6024 45501
+House on Haunted Hill: 2519 2995 26138
+Planet of the Apes: 2529 3058 4643
+The Haunting: 2550 2719
+Dead Ringers: 2551 8828
+The King and I: 2559 2565
+Bandits: 2562 4844
+The Out-of-Towners: 2574 7250
+Cookie's Fortune: 2583 4579
+Foolish Wives: 2584 7288
+Waking Life: 2587 4873
+Revolutionary Road: 2603 65130
+The Mummy: 2617 2633 2634
+A Midsummer Night's Dream: 2622 7057
+The Endurance: Shackleton's Legendary Antarctic Expedition: 2627 4783
+The Mummy: Tomb of the Dragon Emperor: 2638 60937
+War of the Worlds: 2662 34048 64997
+The Lost Boys: 2695 4128
+American Pie: 2706 4718
+The Wood: 2714 48150
+Deep Blue Sea: 2722 33539
+The Assassination of Jesse James by the Coward Robert Ford: 2737 47956 55363
+No Mercy: 2741 7521
+The Mission: 2745 6102
+The Little Shop of Horrors: 2746 2747
+The Thomas Crown Affair: 2763 2764
+The Whole Ten Yards: 2769 7381
+Gegen die Wand: 2775 27727
+Cobra: 2777 6800
+Heaven Can Wait: 2779 25891
+"Earth: Final Conflict": 2790 34193
+Problem Child 2: 2798 2799
+The Vampire Bat: 2814 2974
+The 13th Warrior: 2826 8723
+Wayne's World: 2850 3253
+Communion: 2853 3758
+The Forgotten: 2854 8870
+The Forgotten: 2854 64611
+The Power of Nightmares: The Rise of the Politics of Fear: 2855 53883
+American Splendor: 2864 6620
+Jui kuen II: 2924 3972
+Hairspray: 2926 52975
+The Razor's Edge: 2928 8208
+Sullivan's Travels: 2936 31247
+Goldfinger: 2947 5834
+Fever Pitch: 2962 32598
+The Best Man: 2975 26113
+The Guardian: 2982 48412
+City Lights: 2994 3307
+The Bone Collector: 3005 7114
+Inside Man: 3006 44199
+Slaughterhouse-Five: 3026 3027 8690
+Joan of Arc: 3053 8662
+Sleepy Hollow: 3081 53450
+Last Chance Harvey: 3088 7567
+Frozen River: 3109 32316 60943
+North Country: 3110 4607 39234
+Flawless: 3115 57353
+The End of the Affair: 3125 3126
+Sweet and Lowdown: 3129 4258
+Go West: 3133 37211
+Punisher: War Zone: 3150 4636 7439 64231
+Stuart Little 2: 3157 5480
+Man on the Moon: 3174 4061
+Scarface: 3184 4262
+Scarface: 3184 25788
+Five Easy Pieces: 3201 5778 31613
+A Star Is Born: 3217 25996
+U-Carmen e-Khayelitsha: 3222 32444
+Soy Cuba: 3245 5336
+Of Mice and Men: 3271 4178
+Gone Baby Gone: 3280 55290
+The Beach: 3285 3379 4474  61961
+Blue Collar Comedy Tour: The Movie: 3304 6005
+Born Yesterday: 3341 6233
+Et Dieu... cr�a la femme: 3343 3845
+Blind Date: 3394 6044
+Animal House: 3421 4340
+Resurrecting the Champ :3428 54612
+Death Wish: 3430 3431
+Lord of the Flies: 3461 4951
+Modern Times: 3462 5641
+The Road to El Dorado: 3483 3487
+My Life Without Me: 3502 6770
+Solyaris: 3503 5881
+Me, Myself & Irene: 3515 3752
+King Arthur: 3524 8640
+Predator: 3527 3697 26726
+The Postman Always Rings Twice: 3529 7728
+28 Days Later...: 3534 6502
+Where the Heart Is: 3565 6481
+Cach�: 3576 36276
+Gladiator: 3578 8132
+� bout de souffle: 3584 4914
+Gypsy: 3604 64338
+Road Trip: 3617 6342  7959
+Possession: 3621 5527
+Benji the Hunted: 3672 3673
+The Boys of Baraka: 3677 42602
+Sleepwalking: 3709 60322
+Gone in Sixty Seconds: 3717 5062
+Sunshine: 3720 52328
+The Last American Virgin: 3722 6092
+Assault on Precinct 13: 3726 31420
+Shaft: 3729 3744
+Balls of Fury: 3732 25825  54732
+Match Point: 3748 41285
+Asylum: 3757 34538
+F/X2: 3763 3764
+Missing in Action 2: The Beginning: 3766 3767
+Project Moon Base: 3779 61970
+But I'm a Cheerleader: 3786 7887
+X-Men: 3793 7196
+The In Crowd: 3797 25766
+Sinbad and the Eye of the Tiger: 3807 32617
+Psycho Beach Party: 3830 3921
+Crush: 3835 5284  32084
+"Grey's Anatomy": 3892 4175
+The Watcher: 3895 4560
+Under Suspicion: 3906 6823
+A Beautiful Mind: 3912 4995
+Kronos: 3934 6910
+Runaway Jury: 3937 6879
+Get Carter: 3946 3947
+Meet the Parents: 3948 4633
+The Ladies Man: 3955 8994
+Thir13en Ghosts: 3960 4792  4876
+Bedazzled: 3968 7708
+Lucky Number Slevin: 3975 44665
+Charlie's Angels: Full Throttle: 3977 6503
+How the Grinch Stole Christmas: 3988 52435
+Transformers: 4006 53996
+Chocolat: 4014 4703
+O Brother, Where Art Thou?: 4027 4640
+Traffic: 4034 26280
+The Alamo: 4042 7379
+Panic Room: 4055 5266
+Da wan: 4087 6015
+Cursed: 4096 32011
+Dawn of the Dead: 4098 7360  7387
+The Fourth Protocol: 4110 7727
+No Man's Land: 4139 4967
+Cabin Fever: 4145 6707
+The Mists of Avalon: 4174 6790
+Alfie: 4191 8948
+Dan in Real Life: 4197 55267
+Pirates of the Caribbean: At World's End: 4201 53125
+Hot Fuzz: 4202 51255
+The Longest Yard: 4220 33646
+Spy Kids 2: Island of Lost Dreams: 4232 5504
+Joe Dirt: 4247 6929
+Body of Lies: 4250 62374
+Ratatouille: 4269 50872
+Eureka: 4271 6843
+Candy: 4281 44929
+Frankie and Johnny: 4284 4285
+Moulin Rouge!: 4308 8731
+Twelve O'Clock High: 4338 8583
+Underworld: Evolution: 4343 42738
+Les poup�es russes: 4377 34198
+The Cannonball Run: 4396 8927
+11'09''01 - September 11: 4408 7789
+La decima vittima: 4434 6073
+More: 4454 26211
+DOA: Dead or Alive: 4496 4838 7223  50003
+Short Circuit: 4544 4545
+Before Sunset: 4548 8638
+The First $20 Million Is Always the Hardest: 4564 8127
+The Hunting Party: 4575 4807 55116
+Chun gwong cha sit: 4601 7486
+Lean on Me: 4616 5521
+Blueberry: 4651 27450
+Notes on a Scandal: 4659 49961
+See No Evil, Hear No Evil: 4662 8891
+Some Girls: 4668 8668
+The Wizard: 4683 31150
+Black Robe: 4688 6260
+Innocence: 4731 27728 37955
+The Wicker Man: 4754 47810
+Soul Survivors: 4758 5360
+Dr. Mabuse, der Spieler - Ein Bild der Zeit: 4768 5395
+Big Trouble: 4774 6601
+Taken: 4780 59369
+The Grass Is Greener: 4796 7124
+King Solomon's Mines: 4800 7308 25962
+Boogeyman: 4827 31431
+La boum: 4828 5929
+Changeling: 4833 63062
+Bangkok Dangerous: 4868 61465
+Auto Focus: 4871 5680
+When a Stranger Calls: 4893 43904
+Out Cold: 4900 31049
+Dressed to Kill: 4932 8778
+Darkness Falls: 4935 6040
+The Enforcer: 4945 7195
+Ocean's Eleven: 4954 4963
+Spacehunter: Adventures in the Forbidden Zone: 4987 5042
+Sahara: 5001 32596
+24 Hour Party People: 5004 5508
+Failure to Launch: 5032 44004
+Wuthering Heights: 5035 7179  25856
+The Adventures of Huck Finn: 5076 6747
+Cousins: 5077 5253
+Young @ Heart: 5079 59590
+Slackers: 5080 6978
+Rollerball: 5094 5522
+Crossroads: 5106 8119
+The Heartbreak Kid: 5118 55261
+Sleuth: 5120 55278
+The Last Man on Earth: 5132 7891
+Night of the Zombies: 5160 5774
+The Island: 5192 34319
+The Jazz Singer: 5193 25757
+Oh, God! You Devil: 5214 32116
+Eastern Promises: 5224 55118
+Road to Morocco: 5231 31854
+Simon: 5245 33603
+The Rookie: 5267 6812
+The Wrong Guy: 5281 5662
+3:10 to Yuma: 5300 54997
+Enigma: 5316 6076
+Joshua: 5318 54510
+The Aviator: 5332 30812
+Spider-Man: 5349 8636
+The Devil-Doll: 5374 63989
+Star Wars: Episode II - Attack of the Clones: 5378 6439
+The Importance of Being Earnest: 5380 5470
+The Hound of the Baskervilles: 5383 8404 26388
+Monkey Business:5397 25777
+Nora inu: 5408 7924
+The Bourne Identity: 5418 26614
+Pirates of the Caribbean: Dead Man's Chest: 5435 45722
+Never Say Never Again: 5467 7573
+20 Million Miles to Earth: 5468 27790
+H�ndler der vier Jahreszeiten: 5488 5745
+Die B�chse der Pandora: 5511 25763
+Love and a Bullet: 5558 6045
+Barbershop 2: Back in Business: 5572 7261
+The Hills Have Eyes II: 5587 51937
+The Hills Have Eyes: 5588 44397
+The Ladykillers: 5602 7367
+The Banger Sisters: 5610 26303
+The Four Feathers: 5611 31934
+Invincible: 5615 47644
+Charlie and the Chocolate Factory: 5622 8147 30793
+Ae Fond Kiss...: 5624 27851
+Bloody Sunday: 5632 8332
+Sukiyaki Western Django: 5653 61289
+Eight Below: 5663 43917
+The Rules of Attraction: 5666 7094
+Abandon: 5677 51666
+La faute � Fidel!: 5681 56141
+Stay Alive: 5694 44731
+Burn After Reading: 5715 61323
+The Butterfly Effect: 5716 7254
+Sien nui yau wan: 5749 26606
+Lola: 5763 50898
+I, Madman: 5766 6742
+My Bloody Valentine: 5771 7456
+Casino Royale: 5796 49272
+Bad Day at Black Rock: 5828 8094
+The Thief of Bagdad: 5867 5974  7302
+Borat: Cultural Learnings of America for Make Benefit Glorious Nation of Kazakhstan: 5888 48385
+Alone in the Dark; 5918 31424 62299
+Britannia Hospital: 5931 64280
+Gangs of New York: 5956 26391
+The Business: 5964 43853
+A Kiss Before Dying: 5966 26734
+My Girl: 5969 5970
+Stay: 5976 39427
+Black Christmas: 5980 50147
+Indagine su un cittadino al di sopra di ogni sospetto: 6019 8456
+Milk: 6050 63876
+Chaos: 6056 47254
+The Freshman: 6074 6974
+The Freshman: 6074 25752
+Paradise: 6111 8063
+Pirates of the Caribbean: The Curse of the Black Pearl: 6116 6539
+Q: 6120 6180
+Venom: 6145 36531
+Into the West: 6173 62972
+Enchanted: 6211 6658
+Enchanted: 6211 56152
+King of Kings: 6225 8480
+Journey to the Center of the Earth: 6239 60514
+For the Bible Tells Me So: 6255 55620
+Flicka: 6259 48791
+Raising Victor Vargas: 6268 8455
+The Life Aquatic with Steve Zissou: 6269 30810
+Evan Almighty: 6373 53993
+The In-Laws: 6374 26425
+The Italian Job: 6378 6893
+Whale Rider: 6385 8597
+Movie Crazy: 6395 7119
+Movie Crazy: 6395 40870
+Treasure Island: 6405 7770
+Cloak & Dagger: 6445 26504
+Flight of the Phoenix: 6448 27837
+Shattered Glass: 6476 6932
+The Bank Job: 6508 58295
+Fun with Dick and Jane: 6519 42011
+The Incredible Hulk: 6534 60040
+Wild Hogs: 6557 51575
+Stoked: The Rise and Fall of Gator: 6575 6692
+House of Wax: 6629 33164
+Beyond the Valley of the Dolls: 6646 8196
+The Pink Panther: 6662 43836
+Man on Fire: 6683 7445
+Ask the Dust: 6691 44189
+See No Evil: 6736 45852
+Where in the World Is Osama Bin Laden?: 6760 59105
+Les triplettes de Belleville: 6773 32109
+Black Moon Rising: 6795 62764
+30 Days of Night: 6815 55282
+Tais-toi!: 6824 31123
+Scrooge: 6849 8492
+The School of Rock: 6863 33677
+Lemony Snicket's A Series of Unfortunate Events: 6865 27706
+Kill Bill: Vol. 2: 6874 7438
+The Return: 6882 49205
+Impulse: 6894 65006
+Blindness:6955 63033
+Funny Games U.S.: 6975 58301
+A Tale of Two Cities: 6984 63121
+Presumed Innocent: 7018 7277
+Proof: 7020 36527
+Star Wars: Episode III - Revenge of the Sith: 7032 33493
+The Front Page: 7093 8302
+CrissCross: 7100 8768
+Run Fatboy Run: 7127 58162
+My Darling Clementine:7130 7210
+Cheaper by the Dozen: 7161 7395
+Teacher's Pet: 7174 26038
+The Final Cut: 7203 8939
+Dr. Jekyll and Mr. Hyde: 7208 8521 25736
+It: 7253 26693
+Ocean's Thirteen: 7285 53322
+The Chase: 7341 31367
+The Last Kiss: 7342 47970
+The Girl Next Door: 7346 8130  59604
+Clifford's Really Big Movie:  7353 7446
+Jersey Girl:  7366 7417
+A Foreign Affair:  7370 49200
+Ned Kelly:  7372 7399
+Mac and Me:  7401 31555
+Miracle at St. Anna:  7404 61991
+Harold & Kumar Go to White Castle:  7411 8807
+The Wrestler:  7452 64839
+The Desperate Hours:  7523 55895
+Pride & Prejudice:  7579 40629
+Delta Force 2: The Colombian Connection:  7704 8118
+Boy Meets Girl:  7726 26498
+The Baxter:  7742 36477
+Rambo:  7787 57528
+The Warriors:  7802 27528
+Dreamer: Inspired by a True Story:  7815 39307
+School for Scoundrels:  7818 48416
+Crazy Love:  7839 55851
+Kakushi-toride no san-akunin:  7925 26819
+Bottle Shock:  7952 60948
+Dolls: 7987 8327
+Death Race: 7991 61248
+The Pursuit of Happyness: 8131 47099
+College: 8275 61354
+Oliver Twist: 8341 9017 37736
+Super Size Me: 8464 8720
+Ningen no j�ken: 8484 26048 26073
+The Hitcher: 8501 50445
+Taxi: 8604 8912
+I, Robot: 8644 32031
+The Greatest Game Ever Played: 8706 37739
+Il mio viaggio in Italia: 8755 53835
+Smile: 8851 32605
+The Sentinel: 8885 45062
+Bug: 8902 53127
+Planet Terror: 8903 54995
+Being Julia: 8943 32234
+National Treasure: Book of Secrets: 8972 56775
+Alexander: 8977 9002
+The Bellboy: 8986 64245
+Unknown: 25762 51037
+Dead End: 25835 27584
+The Holiday: 25850 49286
+Letters from Iwo Jima: 25865 50068
+Into the Wild: 25999 55247
+The Prize Winner of Defiance, Ohio: 26107 37855
+Shooting Dogs: 26174 49265
+Yours, Mine and Ours: 26198 40962
+Slither: 26277 44828
+Wedding Crashers: 26414 34162
+Beautiful Boxer: 26965 31705
+Interview: 27005 55205
+The Hole: 27338 31545
+Conspiracy: 27410 60688
+Little Miss Marker: 30994 30996
+Employee of the Month: 31445 48520
+The Chronicles of Narnia: Prince Caspian: 32170 59501
+Yes Man: 33832 37477 64969
+Appaloosa: 34299 61986
+V for Vendetta: 34330 44191
+Lord of War: 36529 63310
+Indiana Jones and the Kingdom of the Crystal Skull: 37957 59615
+High School Musical: 46062 61123
+21: 52767 58803
+4: Rise of the Silver Surfer: 53131 53464
+Elizabeth: The Golden Age: 55274 55507
+  

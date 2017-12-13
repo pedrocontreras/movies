@@ -1,0 +1,63 @@
+BODY {
+	font-family:arial;
+	font-size:90%;
+	margin:15px;
+	color:#666;
+}
+
+H1 {
+	text-align:center;
+	font-size:30px;
+	color: #66666;
+}
+
+H2 {
+	font-size:16px;
+	color: black;
+}
+
+H3 {
+	font-size:13px;
+	color: #666666;
+}
+
+.section  table {
+	border: 1px solid black;
+	border-collapse: collapse;
+	margin: 10px;
+}
+
+.section td {
+	border: 1px solid black;
+}
+
+.foot {
+    margin-left: 15px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #999999;
+}
+
+/* CSS Document */
+
+input {
+	color: #781351;
+	background: #FFFFCC;
+	border: 1px solid #781351;
+	margin-right: 0.5em;
+}
+
+.submit input {
+	color: #000;
+	background: #ffa20f;
+	
+	border: 2px outset #d7b9c9;
+}
+
+.submit textarea {
+	color: #000;
+	background: #FFFFCC;
+	border: 2px outset #d7b9c9;
+}
+
+
