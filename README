@@ -55,8 +55,6 @@ embedded. Libraries can be downloaded from:
 http://tomcat.apache.org/download-70.cgi
 
  
-
-
 -------------------------------------------------------
 ################ COMPILING THE PROJECT ################
 -------------------------------------------------------
@@ -240,7 +238,7 @@ Eye for an Eye: 61 4946
 Don't Be a Menace to South Central While Drinking Your Juice in the Hood: 63 39896
 From Dusk Till Dawn: 70 3587
 Kicking & Screaming: 72 33495
-Les mis�rables: 73 1873
+Les miserables: 73 1873
 Black Sheep: 88 55553
 The Bridges of Madison County: 105 33152
 Taxi Driver: 111 41136
@@ -273,12 +271,12 @@ Mixed Nuts: 275 6525
 Miracle on 34th Street: 277 2398
 Nobody's Fool: 281 26577
 Natural Born Killers: 288 7943 26117
-L�on: 293 31485
+Leon: 293 31485
 Trois couleurs: Rouge: 306 2929  62235
 Santa Claus: 317 2399
 Tank Girl: 327 8634
 Village of the Damned: 332 2553
-Incubo sulla citt� contaminata: 336 8220
+Incubo sulla citte contaminata: 336 8220
 War: 340 54775
 The Jungle Book: 362 2078  6743
 The Mask: 367 8806  8880
@@ -324,13 +322,13 @@ The Riches: 730 32090
 Twister: 736 7781
 Star Wars: Episode I - The Phantom Menace: 761 2628
 This Is Spinal Tap: 764 1288  4674
-La m�me: 771 6735  52579
+La meme: 771 6735  52579
 The Fan: 782 5655
 The Hunchback of Notre Dame: 783 7079  25746
 The Nutty Professor: 788 2136
 Phenomenon: 802 6803
 Mystery, Alaska: 808 2889
-Jeder f�r sich und Gott gegen alle: 824 5056
+Jeder fur sich und Gott gegen alle: 824 5056
 Ransom: 832 7197
 High School Musical 3: Senior Year: 833 62912
 Evil Angels: 853 3211
@@ -380,10 +378,10 @@ Get Over It: 1142 4168
 Faust: Love of the Damned: 1151 4404
 Raw Deal: 1153 7310
 Best of the Best 3: No Turning Back: 1170 6491
-La double vie de V�ronique: 1176 6603
+La double vie de Veronique: 1176 6603
 The Thin Blue Line: 1189 7775
 12 Angry Men: 1203 55020
-Der Himmel �ber Berlin: 1211 1925
+Der Himmel uber Berlin: 1211 1925
 Psycho: 1219 2389
 Henry V: 1224 25901
 Trust the Man: 1236 47976
@@ -395,7 +393,7 @@ Back to the Future: 1270 1946
 Cool Hand Luke: 1276 5754
 The Big Sleep: 1284 5352
 Ben-Hur: 1287 6986
-Alien�: 1320 1690
+Alien: 1320 1690
 The Amityville Horror: 1327 33085
 Believers: 1332 5379
 The Birds: 1333 4479
@@ -599,7 +597,7 @@ Gone Baby Gone: 3280 55290
 The Beach: 3285 3379 4474  61961
 Blue Collar Comedy Tour: The Movie: 3304 6005
 Born Yesterday: 3341 6233
-Et Dieu... cr�a la femme: 3343 3845
+Et Dieu... cria la femme: 3343 3845
 Blind Date: 3394 6044
 Animal House: 3421 4340
 Resurrecting the Champ :3428 54612
@@ -615,9 +613,9 @@ Predator: 3527 3697 26726
 The Postman Always Rings Twice: 3529 7728
 28 Days Later...: 3534 6502
 Where the Heart Is: 3565 6481
-Cach�: 3576 36276
+Cache: 3576 36276
 Gladiator: 3578 8132
-� bout de souffle: 3584 4914
+bout de souffle: 3584 4914
 Gypsy: 3604 64338
 Road Trip: 3617 6342  7959
 Possession: 3621 5527
@@ -683,7 +681,7 @@ Frankie and Johnny: 4284 4285
 Moulin Rouge!: 4308 8731
 Twelve O'Clock High: 4338 8583
 Underworld: Evolution: 4343 42738
-Les poup�es russes: 4377 34198
+Les pouples russes: 4377 34198
 The Cannonball Run: 4396 8927
 11'09''01 - September 11: 4408 7789
 La decima vittima: 4434 6073
@@ -758,8 +756,8 @@ The Bourne Identity: 5418 26614
 Pirates of the Caribbean: Dead Man's Chest: 5435 45722
 Never Say Never Again: 5467 7573
 20 Million Miles to Earth: 5468 27790
-H�ndler der vier Jahreszeiten: 5488 5745
-Die B�chse der Pandora: 5511 25763
+Hundler der vier Jahreszeiten: 5488 5745
+Die Buchse der Pandora: 5511 25763
 Love and a Bullet: 5558 6045
 Barbershop 2: Back in Business: 5572 7261
 The Hills Have Eyes II: 5587 51937
@@ -775,7 +773,7 @@ Sukiyaki Western Django: 5653 61289
 Eight Below: 5663 43917
 The Rules of Attraction: 5666 7094
 Abandon: 5677 51666
-La faute � Fidel!: 5681 56141
+La faute Fidel!: 5681 56141
 Stay Alive: 5694 44731
 Burn After Reading: 5715 61323
 The Butterfly Effect: 5716 7254
@@ -890,7 +888,7 @@ The Pursuit of Happyness: 8131 47099
 College: 8275 61354
 Oliver Twist: 8341 9017 37736
 Super Size Me: 8464 8720
-Ningen no j�ken: 8484 26048 26073
+Ningen no juken: 8484 26048 26073
 The Hitcher: 8501 50445
 Taxi: 8604 8912
 I, Robot: 8644 32031
