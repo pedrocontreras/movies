@@ -3,7 +3,7 @@ NOTICE: I have tested this project only with Mac OS.
         It should work in other OS systems too.
         Only the Java project is included. 
         There is a C version to parse files and populate the 
-        database, but that is not up to date.
+        database, but that is not included herein.
         
 -------------------------------------------------------
 ################  PROJECT DESCRIPTION  ################
